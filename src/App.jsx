@@ -94,13 +94,15 @@ const App = () => {
     window.localStorage.removeItem("loggedNoteappUser");
   };
 
+  const isLoggedIn = user !== null;
+
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
 
   return (
     <div>
       <Header errorMessage={errorMessage} />
 
-      {user === null && (
+      {!isLoggedIn && (
         <LoginForm
           handleLogin={handleLogin}
           username={username}
@@ -109,16 +111,14 @@ const App = () => {
           setPassword={setPassword}
         />
       )}
-      {user !== null && (
+      {isLoggedIn && (
         <div>
-          <p>{user.name} logged in</p>{" "}
-          {
-            <NoteForm
-              addNote={addNote}
-              newNote={newNote}
-              handleNoteChange={handleNoteChange}
-            />
-          }
+          <p>{user.name} logged in</p>
+          <NoteForm
+            addNote={addNote}
+            newNote={newNote}
+            handleNoteChange={handleNoteChange}
+          />
         </div>
       )}
       <FilterButton showAll={showAll} setShowAll={setShowAll} />
