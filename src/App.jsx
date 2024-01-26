@@ -5,10 +5,11 @@ import NoteForm from "./components/NoteForm";
 import LoginForm from "./components/LoginForm";
 import Footer from "./components/Footer";
 import FilterButton from "./components/FilterButton";
+import Header from "./components/Header";
+import LogoutButton from "./components/LogoutButton";
 
 import noteService from "./services/notes";
 import loginService from "./services/login";
-import Header from "./components/Header";
 
 const App = () => {
   const [notes, setNotes] = useState([]);
@@ -88,6 +89,11 @@ const App = () => {
     }
   };
 
+  const handleLogout = () => {
+    setUser(null);
+    window.localStorage.removeItem("loggedNoteappUser");
+  };
+
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
 
   return (
@@ -120,6 +126,7 @@ const App = () => {
         notesToShow={notesToShow}
         toggleImportanceOf={toggleImportanceOf}
       />
+      {user !== null && <LogoutButton handleLogout={handleLogout} />}
       <Footer />
     </div>
   );
