@@ -14,7 +14,6 @@ import LoginForm from "./components/LoginForm";
 
 const App = () => {
   const [notes, setNotes] = useState([]);
-  const [newNote, setNewNote] = useState("a new note...");
   const [showAll, setShowAll] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
   const [username, setUsername] = useState("");
@@ -36,15 +35,9 @@ const App = () => {
     }
   }, []);
 
-  const addNote = (event) => {
-    event.preventDefault();
-    const noteObject = {
-      content: newNote,
-      important: Math.random() < 0.5,
-    };
+  const addNote = (noteObject) => {
     noteService.create(noteObject).then((createdNote) => {
       setNotes(notes.concat(createdNote));
-      setNewNote("");
     });
   };
 
@@ -66,11 +59,6 @@ const App = () => {
         }, 5000);
         setNotes(notes.filter((n) => n.id !== id));
       });
-  };
-
-  const handleNoteChange = (event) => {
-    console.log(event.target.value);
-    setNewNote(event.target.value);
   };
 
   const handleLogin = async (event) => {
@@ -118,11 +106,7 @@ const App = () => {
         <div>
           <p>{user.name} logged in</p>
           <Toggleable buttonLable="new note">
-            <NoteForm
-              onSubmit={addNote}
-              handleChange={handleNoteChange}
-              value={newNote}
-            />
+            <NoteForm createNote={addNote} />
           </Toggleable>
         </div>
       )}
