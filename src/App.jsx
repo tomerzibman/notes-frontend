@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 
 import Notes from "./components/Notes";
 import NoteForm from "./components/NoteForm";
-import LoginForm from "./components/LoginForm";
 import Footer from "./components/Footer";
 import FilterButton from "./components/FilterButton";
 import Header from "./components/Header";
@@ -10,6 +9,8 @@ import LogoutButton from "./components/LogoutButton";
 
 import noteService from "./services/notes";
 import loginService from "./services/login";
+import Toggleable from "./components/Toggleable";
+import LoginForm from "./components/LoginForm";
 
 const App = () => {
   const [notes, setNotes] = useState([]);
@@ -103,22 +104,26 @@ const App = () => {
       <Header errorMessage={errorMessage} />
 
       {!isLoggedIn && (
-        <LoginForm
-          handleLogin={handleLogin}
-          username={username}
-          password={password}
-          setUsername={setUsername}
-          setPassword={setPassword}
-        />
+        <Toggleable buttonLable="login">
+          <LoginForm
+            handleLogin={handleLogin}
+            username={username}
+            password={password}
+            setUsername={setUsername}
+            setPassword={setPassword}
+          />
+        </Toggleable>
       )}
       {isLoggedIn && (
         <div>
           <p>{user.name} logged in</p>
-          <NoteForm
-            addNote={addNote}
-            newNote={newNote}
-            handleNoteChange={handleNoteChange}
-          />
+          <Toggleable buttonLable="new note">
+            <NoteForm
+              onSubmit={addNote}
+              handleChange={handleNoteChange}
+              value={newNote}
+            />
+          </Toggleable>
         </div>
       )}
       <FilterButton showAll={showAll} setShowAll={setShowAll} />
