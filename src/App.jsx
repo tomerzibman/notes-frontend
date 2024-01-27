@@ -1,25 +1,39 @@
 import { useState, useEffect } from "react";
 
-import Note from "./components/Note";
-import Notification from "./components/Notification";
+import Notes from "./components/Notes";
+import NoteForm from "./components/NoteForm";
+import LoginForm from "./components/LoginForm";
 import Footer from "./components/Footer";
+import FilterButton from "./components/FilterButton";
+import Header from "./components/Header";
+import LogoutButton from "./components/LogoutButton";
 
 import noteService from "./services/notes";
+import loginService from "./services/login";
 
 const App = () => {
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState("a new note...");
   const [showAll, setShowAll] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    console.log("effect");
     noteService.getAll().then((initialNotes) => {
-      console.log("promise fullfilled");
       setNotes(initialNotes);
     });
   }, []);
-  console.log("render", notes.length, "notes");
+
+  useEffect(() => {
+    const loggedUserJSON = window.localStorage.getItem("loggedNoteappUser");
+    if (loggedUserJSON) {
+      const user = JSON.parse(loggedUserJSON);
+      setUser(user);
+      noteService.setToken(user.token);
+    }
+  }, []);
 
   const addNote = (event) => {
     event.preventDefault();
@@ -42,7 +56,7 @@ const App = () => {
       .then((updatedNote) => {
         setNotes(notes.map((note) => (note.id === id ? updatedNote : note)));
       })
-      .catch((error) => {
+      .catch(() => {
         setErrorMessage(
           `Note '${note.content}' was already removed from the server`
         );
@@ -58,36 +72,61 @@ const App = () => {
     setNewNote(event.target.value);
   };
 
+  const handleLogin = async (event) => {
+    event.preventDefault();
+    try {
+      const user = await loginService.login({ username, password });
+      window.localStorage.setItem("loggedNoteappUser", JSON.stringify(user));
+      noteService.setToken(user.token);
+      setUser(user);
+      setUsername("");
+      setPassword("");
+    } catch (exception) {
+      setErrorMessage("Wrong credentials");
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000);
+    }
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    window.localStorage.removeItem("loggedNoteappUser");
+  };
+
+  const isLoggedIn = user !== null;
+
   const notesToShow = showAll ? notes : notes.filter((note) => note.important);
 
   return (
     <div>
-      <h1>Notes</h1>
-      <Notification message={errorMessage} />
-      <div>
-        <button
-          onClick={() => {
-            setShowAll(!showAll);
-          }}
-        >
-          {showAll ? "important" : "all"}
-        </button>
-      </div>
-      <ul>
-        {notesToShow.map((note) => (
-          <Note
-            key={note.id}
-            note={note}
-            toggleImportance={() => {
-              toggleImportanceOf(note.id);
-            }}
+      <Header errorMessage={errorMessage} />
+
+      {!isLoggedIn && (
+        <LoginForm
+          handleLogin={handleLogin}
+          username={username}
+          password={password}
+          setUsername={setUsername}
+          setPassword={setPassword}
+        />
+      )}
+      {isLoggedIn && (
+        <div>
+          <p>{user.name} logged in</p>
+          <NoteForm
+            addNote={addNote}
+            newNote={newNote}
+            handleNoteChange={handleNoteChange}
           />
-        ))}
-      </ul>
-      <form onSubmit={addNote}>
-        <input value={newNote} onChange={handleNoteChange} />
-        <button type="submit">save</button>
-      </form>
+        </div>
+      )}
+      <FilterButton showAll={showAll} setShowAll={setShowAll} />
+      <Notes
+        notesToShow={notesToShow}
+        toggleImportanceOf={toggleImportanceOf}
+      />
+      {user !== null && <LogoutButton handleLogout={handleLogout} />}
       <Footer />
     </div>
   );
