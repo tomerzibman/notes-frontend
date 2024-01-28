@@ -1,4 +1,4 @@
-import Note from "./Note";
+import Note from './Note';
 
 const Notes = ({ notesToShow, toggleImportanceOf }) => {
   return (

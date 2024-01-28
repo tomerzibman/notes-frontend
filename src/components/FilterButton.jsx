@@ -6,7 +6,7 @@ const FilterButton = ({ showAll, setShowAll }) => {
           setShowAll(!showAll);
         }}
       >
-        {showAll ? "important" : "all"}
+        {showAll ? 'important' : 'all'}
       </button>
     </div>
   );
