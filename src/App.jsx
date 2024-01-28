@@ -1,16 +1,16 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from 'react';
 
-import Notes from "./components/Notes";
-import NoteForm from "./components/NoteForm";
-import Footer from "./components/Footer";
-import FilterButton from "./components/FilterButton";
-import Header from "./components/Header";
-import LogoutButton from "./components/LogoutButton";
+import Notes from './components/Notes';
+import NoteForm from './components/NoteForm';
+import Footer from './components/Footer';
+import FilterButton from './components/FilterButton';
+import Header from './components/Header';
+import LogoutButton from './components/LogoutButton';
 
-import noteService from "./services/notes";
-import loginService from "./services/login";
-import Toggleable from "./components/Toggleable";
-import LoginForm from "./components/LoginForm";
+import noteService from './services/notes';
+import loginService from './services/login';
+import Toggleable from './components/Toggleable';
+import LoginForm from './components/LoginForm';
 
 const App = () => {
   const [notes, setNotes] = useState([]);
@@ -27,7 +27,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedNoteappUser");
+    const loggedUserJSON = window.localStorage.getItem('loggedNoteappUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
@@ -53,7 +53,7 @@ const App = () => {
       })
       .catch(() => {
         setErrorMessage(
-          `Note '${note.content}' was already removed from the server`
+          `Note '${note.content}' was already removed from the server`,
         );
         setTimeout(() => {
           setErrorMessage(null);
@@ -65,11 +65,11 @@ const App = () => {
   const handleLogin = async (credentials) => {
     try {
       const user = await loginService.login(credentials);
-      window.localStorage.setItem("loggedNoteappUser", JSON.stringify(user));
+      window.localStorage.setItem('loggedNoteappUser', JSON.stringify(user));
       noteService.setToken(user.token);
       setUser(user);
     } catch (exception) {
-      setErrorMessage("Wrong credentials");
+      setErrorMessage('Wrong credentials');
       setTimeout(() => {
         setErrorMessage(null);
       }, 5000);
@@ -78,7 +78,7 @@ const App = () => {
 
   const handleLogout = () => {
     setUser(null);
-    window.localStorage.removeItem("loggedNoteappUser");
+    window.localStorage.removeItem('loggedNoteappUser');
   };
 
   const isLoggedIn = user !== null;
@@ -90,14 +90,14 @@ const App = () => {
       <Header errorMessage={errorMessage} />
 
       {!isLoggedIn && (
-        <Toggleable buttonLable="login">
+        <Toggleable buttonLabel="login">
           <LoginForm handleLogin={handleLogin} />
         </Toggleable>
       )}
       {isLoggedIn && (
         <div>
           <p>{user.name} logged in</p>
-          <Toggleable buttonLable="new note" ref={noteFormRef}>
+          <Toggleable buttonLabel="new note" ref={noteFormRef}>
             <NoteForm createNote={addNote} />
           </Toggleable>
         </div>
