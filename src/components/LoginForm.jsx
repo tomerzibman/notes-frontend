@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState } from 'react';
 
-import PropTypes from "prop-types";
+import PropTypes from 'prop-types';
 
 const LoginForm = ({ handleLogin }) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   const doLogin = async (event) => {
     event.preventDefault();
@@ -13,8 +13,8 @@ const LoginForm = ({ handleLogin }) => {
       password,
     };
     await handleLogin(credentials);
-    setUsername("");
-    setPassword("");
+    setUsername('');
+    setPassword('');
   };
 
   return (
